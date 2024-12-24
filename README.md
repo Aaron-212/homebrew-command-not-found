@@ -50,6 +50,34 @@ brew tap homebrew/command-not-found
     end
     ```
 
+* **Nushell**: Add the following hook to your `$nu.config-path`:
+
+    ```nushell
+    $env.config = {
+        # ...other config...
+
+        hooks: {
+            # ...other hooks...
+
+            command_not_found: {
+                |cmd_name| (
+                    try {
+                        let cmds = (brew which-formula $cmd_name)
+                        if ($cmds | is-empty) {
+                            return null
+                        } else {
+                            return (
+                                $"(ansi $env.config.color_config.shape_external)($cmd_name)(ansi reset) " +
+                                $"may be found in the following brew formulae:\n($cmds)"
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+    ```
+
 ## Requirements
 
 This tool requires one of the following:
@@ -57,6 +85,7 @@ This tool requires one of the following:
 * [Zsh](https://www.zsh.org) (the default on macOS Catalina and above)
 * [Bash](https://www.gnu.org/software/bash/) (version 4 and higher)
 * [Fish](https://fishshell.com)
+* [Nushell](https://www.nushell.sh)
 
 ## How it works
 
